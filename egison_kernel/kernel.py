@@ -36,7 +36,7 @@ class EgisonKernel(Kernel):
 
     language_info = {'name': 'egison',
                      'codemirror_mode': 'egison',
-                     'mimetype': 'text/plain',
+                     'mimetype': 'text/x-egison',
                      'file_extension': '.egi'}
 
     def __init__(self, **kwargs):

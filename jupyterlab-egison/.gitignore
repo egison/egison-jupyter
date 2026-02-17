@@ -1,0 +1,7 @@
+node_modules/
+.yarn/
+lib/
+jupyterlab_egison/labextension/
+*.tsbuildinfo
+yarn-error.log
+yarn.lock

@@ -23,14 +23,11 @@ pip install jupyter
 python -m egison_kernel.install
 ```
 
-### 3. (Optional) Install the CodeMirror mode for syntax highlighting
-
-Copy the CodeMirror mode file to Jupyter's CodeMirror directory:
+### 3. Install the syntax highlighting extension
 
 ```sh
-JUPYTER_DIR=$(jupyter --data-dir)
-mkdir -p "$JUPYTER_DIR/nbextensions/codemirror/mode/egison"
-cp codemirror/mode/egison/egison.js "$JUPYTER_DIR/nbextensions/codemirror/mode/egison/"
+cd jupyterlab-egison
+pip install -e .
 ```
 
 ## How to Use

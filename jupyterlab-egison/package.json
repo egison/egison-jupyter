@@ -1,0 +1,54 @@
+{
+  "name": "jupyterlab-egison",
+  "version": "0.1.0",
+  "description": "JupyterLab extension for Egison syntax highlighting",
+  "keywords": [
+    "jupyter",
+    "jupyterlab",
+    "jupyterlab-extension",
+    "egison",
+    "codemirror"
+  ],
+  "license": "MIT",
+  "author": "Satoshi Egi",
+  "files": [
+    "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
+    "style/**/*.{css,js,eot,gif,html,jpg,json,png,svg,woff2,ttf}"
+  ],
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/egison/egison.git"
+  },
+  "scripts": {
+    "build": "jlpm build:lib && jlpm build:labextension:dev",
+    "build:prod": "jlpm clean && jlpm build:lib && jlpm build:labextension",
+    "build:labextension": "jupyter labextension build .",
+    "build:labextension:dev": "jupyter labextension build --development True .",
+    "build:lib": "tsc",
+    "clean": "jlpm clean:lib",
+    "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
+    "clean:all": "jlpm clean:lib && jlpm clean:labextension",
+    "clean:labextension": "rimraf jupyterlab_egison/labextension",
+    "install:extension": "jlpm build",
+    "watch": "run-p watch:src watch:labextension",
+    "watch:src": "tsc -w",
+    "watch:labextension": "jupyter labextension watch ."
+  },
+  "dependencies": {
+    "@codemirror/language": "^6.0.0",
+    "@jupyterlab/application": "^4.0.0",
+    "@jupyterlab/codemirror": "^4.0.0"
+  },
+  "devDependencies": {
+    "@jupyterlab/builder": "^4.0.0",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^5.0.0",
+    "typescript": "~5.0.2"
+  },
+  "jupyterlab": {
+    "extension": true,
+    "outputDir": "jupyterlab_egison/labextension"
+  }
+}

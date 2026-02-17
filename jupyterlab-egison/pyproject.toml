@@ -1,0 +1,50 @@
+[build-system]
+requires = ["hatchling>=1.5.0", "jupyterlab>=4.0.0,<5", "hatch-jupyter-builder>=0.5"]
+build-backend = "hatchling.build"
+
+[project]
+name = "jupyterlab-egison"
+version = "0.1.0"
+description = "JupyterLab extension for Egison syntax highlighting"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.8"
+authors = [
+    { name = "Satoshi Egi" }
+]
+classifiers = [
+    "Framework :: Jupyter",
+    "Framework :: Jupyter :: JupyterLab",
+    "Framework :: Jupyter :: JupyterLab :: 4",
+    "Framework :: Jupyter :: JupyterLab :: Extensions",
+    "Framework :: Jupyter :: JupyterLab :: Extensions :: Prebuilt",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+dependencies = []
+
+[tool.hatch.build.targets.sdist]
+artifacts = ["jupyterlab_egison/labextension"]
+
+[tool.hatch.build.targets.wheel.shared-data]
+"jupyterlab_egison/labextension" = "share/jupyter/labextensions/jupyterlab-egison"
+"install.json" = "share/jupyter/labextensions/jupyterlab-egison/install.json"
+
+[tool.hatch.build.hooks.jupyter-builder]
+dependencies = ["hatch-jupyter-builder>=0.5"]
+build-function = "hatch_jupyter_builder.npm_builder"
+ensured-targets = [
+    "jupyterlab_egison/labextension/static/style.js",
+    "jupyterlab_egison/labextension/package.json",
+]
+skip-if-exists = ["jupyterlab_egison/labextension/static/style.js"]
+
+[tool.hatch.build.hooks.jupyter-builder.build-kwargs]
+build_cmd = "build:prod"
+npm = ["jlpm"]
+
+[tool.hatch.build.hooks.jupyter-builder.editable-build-kwargs]
+build_cmd = "install:extension"
+npm = ["jlpm"]
+source_dir = "src"
+build_dir = "jupyterlab_egison/labextension"
