@@ -26,9 +26,22 @@ python -m egison_kernel.install
 ### 3. Install the syntax highlighting extension
 
 ```sh
+pip install jupyterlab
 cd jupyterlab-egison
 pip install -e .
 ```
+
+### 4. Rebuild the syntax highlighting extension (after editing)
+
+If you modify the CodeMirror mode source (`jupyterlab-egison/src/index.ts`), rebuild and reinstall the extension, then restart Jupyter:
+
+```sh
+cd jupyterlab-egison
+jlpm build:lib && jlpm build:labextension:dev
+pip install -e .
+```
+
+Then restart Jupyter Notebook (`Ctrl+C` to stop, then `jupyter notebook` again).
 
 ## How to Use
 
@@ -52,7 +65,8 @@ The CodeMirror mode supports Egison 5 syntax:
 - Built-in types: `Integer`, `MathExpr`, `Float`, `Bool`, `Char`, `String`, `IO`, `Tensor`, `Vector`, `Matrix`, `DiffForm`, `Matcher`, `Pattern`, `List`
 - Pattern variables (`$x`), value patterns (`#x`)
 - Comments: line comments (`--`) and nested block comments (`{- -}`)
-- Tensor index notation, mathematical symbols, and Greek letters
+- Tensor index notation and mathematical symbols
+- Greek letters are treated as regular identifiers (no special highlighting)
 
 ## Requirements
 

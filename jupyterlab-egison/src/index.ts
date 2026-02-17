@@ -59,7 +59,7 @@ const constants = makeKeywords('True False undefined something');
 const testKeywords = makeKeywords('assert assertEqual');
 
 function isIdentChar(ch: string): boolean {
-  return /[\w']/.test(ch);
+  return /[\w']/.test(ch) || isGreek(ch);
 }
 
 function isOpChar(ch: string): boolean {
@@ -220,14 +220,8 @@ function tokenBase(
     return 'operator';
   }
 
-  // Greek letters
-  if (isGreek(ch)) {
-    stream.eatWhile(isGreek);
-    return 'variableName.definition';
-  }
-
-  // Identifiers and keywords
-  if (/[a-zA-Z_]/.test(ch)) {
+  // Identifiers and keywords (including Greek letters)
+  if (/[a-zA-Z_]/.test(ch) || isGreek(ch)) {
     stream.eatWhile(isIdentChar);
     const word = stream.current();
 
