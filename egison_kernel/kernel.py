@@ -56,33 +56,78 @@ class EgisonKernel(Kernel):
         finally:
             signal.signal(signal.SIGINT, sig)
 
+    def _split_expressions(self, code):
+        """Split cell code into individual top-level expressions.
+
+        A new expression starts when a non-blank, non-indented line appears.
+        Indented lines are continuation of the previous expression.
+        """
+        expressions = []
+        current_lines = []
+
+        for line in code.split('\n'):
+            if line.strip() == '':
+                # Blank line: include in current expression as separator
+                if current_lines:
+                    current_lines.append(line)
+                continue
+
+            if line[0] != ' ' and line[0] != '\t' and current_lines:
+                # Non-indented line with existing expression -> start new expression
+                # Remove trailing blank lines from previous expression
+                while current_lines and current_lines[-1].strip() == '':
+                    current_lines.pop()
+                if current_lines:
+                    expressions.append('\n'.join(current_lines))
+                current_lines = [line]
+            else:
+                current_lines.append(line)
+
+        # Don't forget the last expression
+        while current_lines and current_lines[-1].strip() == '':
+            current_lines.pop()
+        if current_lines:
+            expressions.append('\n'.join(current_lines))
+
+        return expressions
+
     def do_execute(self, code, silent, store_history=True,
                    user_expressions=None, allow_stdin=False):
-        code = crlf_pat.sub('#newline', code.strip())
+        code = code.strip()
         if not code:
             return {'status': 'ok', 'execution_count': self.execution_count,
                     'payload': [], 'user_expressions': {}}
 
+        expressions = self._split_expressions(code)
         interrupted = False
-        try:
-            output = self.egisonwrapper.run_command(code, timeout=None)
-        except KeyboardInterrupt:
-            self.egisonwrapper.child.sendintr()
-            interrupted = True
-            self.egisonwrapper._expect_prompt()
-            output = self.egisonwrapper.child.before
-        except EOF:
-            output = self.egisonwrapper.child.before + 'Restarting Egison'
-            self._start_egison()
 
-        if not silent:
-            moutput = re.match(r'\#latex\|(.*)\|\#', output)
-            if moutput:
-                content = {'execution_count': self.execution_count, 'data': {'text/html': u'{}'.format(u'$$' + moutput.group(1) + u'$$')}, 'metadata': {}}
-                self.send_response(self.iopub_socket, 'display_data', content)
-            else:
-                stream_content = {'execution_count': self.execution_count, 'name': 'stdout', 'text': output}
-                self.send_response(self.iopub_socket, 'stream', stream_content)
+        for expr in expressions:
+            # Replace newlines within a single expression for the REPL
+            repl_code = crlf_pat.sub('#newline', expr)
+
+            try:
+                output = self.egisonwrapper.run_command(repl_code, timeout=None)
+            except KeyboardInterrupt:
+                self.egisonwrapper.child.sendintr()
+                interrupted = True
+                self.egisonwrapper._expect_prompt()
+                output = self.egisonwrapper.child.before
+            except EOF:
+                output = self.egisonwrapper.child.before + 'Restarting Egison'
+                self._start_egison()
+                break
+
+            if not silent and output and output.strip():
+                moutput = re.match(r'\#latex\|(.*)\|\#', output)
+                if moutput:
+                    content = {'execution_count': self.execution_count, 'data': {'text/html': u'{}'.format(u'$$' + moutput.group(1) + u'$$')}, 'metadata': {}}
+                    self.send_response(self.iopub_socket, 'display_data', content)
+                else:
+                    stream_content = {'execution_count': self.execution_count, 'name': 'stdout', 'text': output}
+                    self.send_response(self.iopub_socket, 'stream', stream_content)
+
+            if interrupted:
+                break
 
         if interrupted:
             return {'status': 'abort', 'execution_count': self.execution_count}
