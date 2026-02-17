@@ -11,7 +11,7 @@ import re
 import signal
 import uuid
 
-__version__ = '0.0.1'
+__version__ = '0.1.0'
 
 version_pat = re.compile(r'(\d+(\.\d+)+)')
 crlf_pat = re.compile(r'[\r\n]+')

@@ -2,8 +2,8 @@ from setuptools import setup, find_packages
 
 
 setup(name='egison_kernel',
-      version='0.0.1',
-      description='Egison Kernel for Jupyter Notebook',
+      version='0.1.0',
+      description='Egison 5 Kernel for Jupyter Notebook',
       install_requires=[
           'ipykernel',
           'pexpect',

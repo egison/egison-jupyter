@@ -2,3 +2,6 @@ __pycache__
 *.pyc
 build/
 dist/
+.ipynb_checkpoints/
+.venv/
+egison_kernel.egg-info/
