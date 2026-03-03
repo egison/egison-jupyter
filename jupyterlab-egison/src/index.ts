@@ -59,7 +59,7 @@ const constants = makeKeywords('True False undefined something');
 const testKeywords = makeKeywords('assert assertEqual');
 
 function isIdentChar(ch: string): boolean {
-  return /[\w']/.test(ch) || isGreek(ch);
+  return /[a-zA-Z0-9']/.test(ch) || isGreek(ch);
 }
 
 function isOpChar(ch: string): boolean {
@@ -146,14 +146,19 @@ function tokenBase(
 
   // Pattern variable: $x
   if (ch === '$') {
-    stream.match(/[a-zA-Z_][a-zA-Z0-9_']*/, true);
+    stream.match(/[a-zA-Z][a-zA-Z0-9']*/, true);
     return 'variableName.special';
   }
 
   // Value pattern: #x, #(expr)
   if (ch === '#') {
-    stream.match(/[a-zA-Z_][a-zA-Z0-9_']*/, true);
+    stream.match(/[a-zA-Z][a-zA-Z0-9']*/, true);
     return 'atom';
+  }
+
+  // Tensor subscript index marker: _
+  if (ch === '_') {
+    return 'operator';
   }
 
   // Numbers
@@ -221,7 +226,7 @@ function tokenBase(
   }
 
   // Identifiers and keywords (including Greek letters)
-  if (/[a-zA-Z_]/.test(ch) || isGreek(ch)) {
+  if (/[a-zA-Z]/.test(ch) || isGreek(ch)) {
     stream.eatWhile(isIdentChar);
     const word = stream.current();
 
