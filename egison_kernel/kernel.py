@@ -120,7 +120,7 @@ class EgisonKernel(Kernel):
             if not silent and output and output.strip():
                 moutput = re.match(r'\#latex\|(.*)\|\#', output)
                 if moutput:
-                    content = {'execution_count': self.execution_count, 'data': {'text/html': u'{}'.format(u'$$' + moutput.group(1) + u'$$')}, 'metadata': {}}
+                    content = {'execution_count': self.execution_count, 'data': {'text/html': u'{}'.format(u'$' + moutput.group(1) + u'$')}, 'metadata': {}}
                     self.send_response(self.iopub_socket, 'display_data', content)
                 else:
                     stream_content = {'execution_count': self.execution_count, 'name': 'stdout', 'text': output}
