@@ -9,7 +9,7 @@ from pathlib import Path
 import nbformat
 
 from tools.math_notebooks.catalog import CATALOG, EXPECTED_SLUGS
-from tools.math_notebooks.common import KERNEL_METADATA, NOTEBOOK_DIR
+from tools.math_notebooks.common import KERNEL_METADATA, NOTEBOOK_DIR, REPOSITORY_ROOT
 
 
 BAD_OUTPUT = re.compile(
@@ -89,9 +89,16 @@ def validate_notebook(path: Path, require_outputs: bool) -> list[str]:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--require-outputs", action="store_true")
+    parser.add_argument(
+        "--notebook-dir",
+        type=Path,
+        default=NOTEBOOK_DIR,
+        help="directory containing the 41 mathematics notebooks",
+    )
     args = parser.parse_args()
 
-    actual = {path.stem for path in NOTEBOOK_DIR.glob("*.ipynb")}
+    notebook_directory = args.notebook_dir.resolve()
+    actual = {path.stem for path in notebook_directory.glob("*.ipynb")}
     problems: list[str] = []
     missing = sorted(EXPECTED_SLUGS - actual)
     unexpected = sorted(actual - EXPECTED_SLUGS)
@@ -101,7 +108,7 @@ def main() -> int:
         problems.append(f"unexpected notebooks: {', '.join(unexpected)}")
 
     for _, slug, _ in CATALOG:
-        path = NOTEBOOK_DIR / f"{slug}.ipynb"
+        path = notebook_directory / f"{slug}.ipynb"
         if path.exists():
             for problem in validate_notebook(path, args.require_outputs):
                 problems.append(f"{path.name}: {problem}")
@@ -109,7 +116,14 @@ def main() -> int:
     if problems:
         print("\n".join(problems))
         return 1
-    print(f"Validated {len(CATALOG)} mathematics notebooks.")
+    try:
+        display_directory = notebook_directory.relative_to(REPOSITORY_ROOT)
+    except ValueError:
+        display_directory = notebook_directory
+    print(
+        f"Validated {len(CATALOG)} mathematics notebooks in "
+        f"{display_directory}."
+    )
     return 0
 
 

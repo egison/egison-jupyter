@@ -68,6 +68,21 @@ The CodeMirror mode supports Egison 5 syntax:
 - Tensor index notation and mathematical symbols
 - Greek letters are treated as regular identifiers (no special highlighting)
 
+## Mathematics Notebooks
+
+The executed English notebooks live in `math/`. Japanese notebooks in
+`ja/math/` reuse every code cell and stored output from the English notebooks,
+while replacing Markdown from the reviewed translations in
+`translations/ja/math/`.
+
+Regenerate and verify the Japanese notebooks with:
+
+```sh
+python tools/localize_math_notebooks.py
+python tools/localize_math_notebooks.py --check
+python -m tools.validate_math_notebooks --notebook-dir ja/math --require-outputs
+```
+
 ## Requirements
 
 - Egison 5.x installed and available in PATH
