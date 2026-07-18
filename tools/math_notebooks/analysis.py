@@ -1,5 +1,7 @@
 """Build the mathematical-analysis notebooks."""
 
+import textwrap
+
 from .common import code, markdown, write_notebook
 
 
@@ -596,6 +598,21 @@ def build_polar_laplacian(dimension: int) -> None:
     coordinate_name = "polar" if is_plane else "spherical"
     cartesian_name = "two" if is_plane else "three"
     setup, cartesian, cartesian_result, expected = polar_geometry(dimension)
+    metric_description = textwrap.dedent(
+        (r"""
+        ## Coordinate metric
+
+        The line element is
+
+        $$ds^2=dr^2+r^2d\theta^2$$
+        """ if is_plane else r"""
+        ## Coordinate metric
+
+        The line element is
+
+        $$ds^2=dr^2+r^2d\theta^2+r^2\sin^2\theta\,d\phi^2.$$
+        """)
+    ).strip()
 
     write_notebook(
         slug,
@@ -611,20 +628,8 @@ def build_polar_laplacian(dimension: int) -> None:
                 """
             ),
             markdown(
-                (r"""
-                ## Coordinate metric
-
-                The line element is
-
-                $$ds^2=dr^2+r^2d\theta^2$$
-                """ if is_plane else r"""
-                ## Coordinate metric
-
-                The line element is
-
-                $$ds^2=dr^2+r^2d\theta^2+r^2\sin^2\theta\,d\phi^2.$$
-                """)
-                + "\nThe metric and its inverse are represented as indexed tensors."
+                metric_description
+                + "\n\nThe metric and its inverse are represented as indexed tensors."
             ),
             code(setup),
             code(
@@ -661,7 +666,7 @@ def build_polar_laplacian(dimension: int) -> None:
                     - g~i~j . Γ~k_i_j . ∂/∂ f q~k
                 """
             ),
-            markdown("## Result\n\n" + expected),
+            markdown("## Result\n\n" + textwrap.dedent(expected).strip()),
             code(
                 """
                 laplacian
