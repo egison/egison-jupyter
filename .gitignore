@@ -5,3 +5,4 @@ dist/
 .ipynb_checkpoints/
 .venv/
 egison_kernel.egg-info/
+.DS_Store
