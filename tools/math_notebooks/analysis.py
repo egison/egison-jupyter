@@ -523,11 +523,13 @@ def polar_geometry(dimension: int) -> tuple[str, str, str, str]:
         setup = """
             declare symbol r, θ : MathValue
 
-            def q : Vector MathValue := [| r, θ |]
+            def x : Vector MathValue := [| r, θ |]
+            def position : Vector MathValue := [| r * cos θ, r * sin θ |]
+
+            def e_i_j : Matrix MathValue := ∂/∂ position_j x~i
             def g_i_j : Matrix MathValue :=
-              [| [| 1, 0 |], [| 0, r^2 |] |]_i_j
-            def g~i~j : Matrix MathValue :=
-              [| [| 1, 0 |], [| 0, r^(-2) |] |]~i~j
+              generateTensor (\\[a, b] -> V.* e_a_# e_b_#) [2, 2]
+            def g~i~j : Matrix MathValue := M.inverse g_#_#
 
             def f : MathValue := function (r, θ)
             """
@@ -552,12 +554,16 @@ def polar_geometry(dimension: int) -> tuple[str, str, str, str]:
         setup = """
             declare symbol r, θ, φ : MathValue
 
-            def q : Vector MathValue := [| r, θ, φ |]
+            def x : Vector MathValue := [| r, θ, φ |]
+            def position : Vector MathValue :=
+              [| r * sin θ * cos φ
+               , r * sin θ * sin φ
+               , r * cos θ
+               |]
+
+            def e_i_j : Matrix MathValue := ∂/∂ position_j x~i
             def g_i_j : Matrix MathValue :=
-              [| [| 1, 0, 0 |]
-               , [| 0, r^2, 0 |]
-               , [| 0, 0, r^2 * (sin θ)^2 |]
-               |]_i_j
+              generateTensor (\\[a, b] -> V.* e_a_# e_b_#) [3, 3]
             def g~i~j : Matrix MathValue := M.inverse g_#_#
 
             def f : MathValue := function (r, θ, φ)
@@ -629,7 +635,9 @@ def build_polar_laplacian(dimension: int) -> None:
             ),
             markdown(
                 metric_description
-                + "\n\nThe metric and its inverse are represented as indexed tensors."
+                + "\n\nThe coordinate map is differentiated to obtain tangent vectors. "
+                "Their dot products give the metric, and its inverse is then "
+                "computed from that induced matrix."
             ),
             code(setup),
             code(
@@ -656,14 +664,14 @@ def build_polar_laplacian(dimension: int) -> None:
                 """
                 def Γ_i_j_k : Tensor MathValue :=
                   (1 / 2) *
-                    (∂/∂ g_i_k q~j + ∂/∂ g_i_j q~k - ∂/∂ g_j_k q~i)
+                    (∂/∂ g_i_k x~j + ∂/∂ g_i_j x~k - ∂/∂ g_j_k x~i)
 
                 def Γ~i_j_k : Tensor MathValue := withSymbols [m]
                   g~i~m . Γ_m_j_k
 
                 def laplacian : MathValue := withSymbols [i, j, k]
-                  g~i~j . ∂/∂ (∂/∂ f q~j) q~i
-                    - g~i~j . Γ~k_i_j . ∂/∂ f q~k
+                  g~i~j . ∂/∂ (∂/∂ f x~j) x~i
+                    - g~i~j . Γ~k_i_j . ∂/∂ f x~k
                 """
             ),
             markdown("## Result\n\n" + textwrap.dedent(expected).strip()),

@@ -40,15 +40,6 @@ def _vector(entries: list[str]) -> str:
     return "[| " + ", ".join(entries) + " |]"
 
 
-def _diagonal_matrix(entries: list[str], suffix: str) -> str:
-    rows: list[str] = []
-    for row, entry in enumerate(entries):
-        cells = ["0"] * len(entries)
-        cells[row] = entry
-        rows.append("[| " + ", ".join(cells) + " |]")
-    return "[| " + "\n              , ".join(rows) + f"\n              |]{suffix}"
-
-
 def _sphere_embedding(angles: tuple[str, ...]) -> list[str]:
     entries: list[str] = []
     sine_prefix: list[str] = []
@@ -58,19 +49,6 @@ def _sphere_embedding(angles: tuple[str, ...]) -> list[str]:
         sine_prefix.append(f"sin {angle}")
     entries.append(" * ".join(["r", *sine_prefix]))
     return entries
-
-
-def _sphere_metric_entries(angles: tuple[str, ...]) -> tuple[list[str], list[str]]:
-    covariant: list[str] = []
-    contravariant: list[str] = []
-    preceding: list[str] = []
-    for _angle in angles:
-        covariant.append(" * ".join(["r^2", *[f"(sin {a})^2" for a in preceding]]))
-        contravariant.append(
-            " * ".join(["r^(-2)", *[f"(sin {a})^(-2)" for a in preceding]])
-        )
-        preceding.append(_angle)
-    return covariant, contravariant
 
 
 def _sphere_line_element(angles: tuple[str, ...]) -> str:
@@ -88,7 +66,6 @@ def _sphere_cells(dimension: int, angles: tuple[str, ...]) -> list[dict]:
     coordinate_text = ", ".join(LATEX_NAMES[a] for a in angles)
     first = LATEX_NAMES[angles[0]]
     second = LATEX_NAMES[angles[1]]
-    covariant, contravariant = _sphere_metric_entries(angles)
     embedding = _sphere_embedding(angles)
 
     cells = [
@@ -146,18 +123,20 @@ def _sphere_cells(dimension: int, angles: tuple[str, ...]) -> list[dict]:
             ds^2=r^2\left({_sphere_line_element(angles)}\right).
             $$
 
-            We enter this diagonal result explicitly.  That keeps the notebook quick
-            while retaining the same metric derived from
-            $g_{{ij}}=\partial_iX\mathbin{{\cdot}}\partial_jX$.
+            Egison differentiates the embedding to obtain the coordinate tangent
+            vectors and constructs every component as their dot product,
+            $g_{{ij}}=\partial_iX\mathbin{{\cdot}}\partial_jX$.  The inverse metric is
+            then computed from that induced metric.
             """
         ),
         code(
             f"""
-            def g_i_j : Matrix MathValue :=
-              {_diagonal_matrix(covariant, '_i_j')}
+            def e_i_j : Matrix MathValue := ∂/∂ X_j x~i
 
-            def g~i~j : Matrix MathValue :=
-              {_diagonal_matrix(contravariant, '~i~j')}
+            def g_i_j : Matrix MathValue :=
+              generateTensor (\\[a, b] -> V.* e_a_# e_b_#) [{dimension}, {dimension}]
+
+            def g~i~j : Matrix MathValue := M.inverse g_#_#
             """
         ),
     ]
@@ -472,11 +451,12 @@ def _torus_cells() -> list[dict]:
                , a * sin θ
                |]
 
-            def g_i_j : Matrix MathValue :=
-              [| [| a^2, 0 |], [| 0, `(a * cos θ + b)^2 |] |]_i_j
+            def e_i_j : Matrix MathValue := ∂/∂ X_j x~i
 
-            def g~i~j : Matrix MathValue :=
-              [| [| a^(-2), 0 |], [| 0, `(a * cos θ + b)^(-2) |] |]~i~j
+            def g_i_j : Matrix MathValue :=
+              generateTensor (\\[u, v] -> V.* e_u_# e_v_#) [2, 2]
+
+            def g~i~j : Matrix MathValue := M.inverse g_#_#
             """
         ),
         code("X"),

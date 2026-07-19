@@ -1,6 +1,6 @@
 <!--
 notebook: riemann-curvature-tensor-of-S3
-source-markdown-sha256: a1ab567b0342ea7cb07124c7ce80b21b1d1cabea8eb7a8beff3111660bc74d0e
+source-markdown-sha256: 2464c00065ab35eb69367fcb8adb24f76a0ac2e53509cb1c70b928dbbad56d5d
 -->
 
 <!-- cell: 869503fe -->
@@ -43,10 +43,9 @@ $$
 ds^2=r^2\left(d\theta^2 + \sin^2 \theta d\phi^2 + \sin^2 \theta \sin^2 \phi d\psi^2\right).
 $$
 
-この対角形式をここでは明示的に入力します。これによりNotebookの計算を
-高速に保ちながら、
-$g_{ij}=\partial_iX\mathbin{\cdot}\partial_jX$ から導かれるものと
-同じ計量を使えます。
+Egisonは埋め込みを微分して座標接ベクトルを求め、それらの内積として
+各成分 $g_{ij}=\partial_iX\mathbin{\cdot}\partial_jX$ を構成します。
+逆計量は、この誘導計量から計算します。
 
 <!-- cell: 9d09a29e -->
 ## レヴィ・チヴィタ接続

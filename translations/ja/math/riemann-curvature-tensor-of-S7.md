@@ -1,6 +1,6 @@
 <!--
 notebook: riemann-curvature-tensor-of-S7
-source-markdown-sha256: 4a114e5cbfe86b720f3fa3a3e81123752dc11135b28064ab8dfd0af54277e423
+source-markdown-sha256: 08e64153ff2cfeb90ae6e39d83d18e5fcee144bf1b697a0282450f59541ea7c8
 -->
 
 <!-- cell: bf752426 -->
@@ -43,10 +43,9 @@ $$
 ds^2=r^2\left(d\alpha^2 + \sin^2 \alpha d\beta^2 + \sin^2 \alpha \sin^2 \beta d\gamma^2 + \sin^2 \alpha \sin^2 \beta \sin^2 \gamma d\delta^2 + \sin^2 \alpha \sin^2 \beta \sin^2 \gamma \sin^2 \delta d\xi^2 + \sin^2 \alpha \sin^2 \beta \sin^2 \gamma \sin^2 \delta \sin^2 \xi d\zeta^2 + \sin^2 \alpha \sin^2 \beta \sin^2 \gamma \sin^2 \delta \sin^2 \xi \sin^2 \zeta d\eta^2\right).
 $$
 
-この対角形式をここでは明示的に入力します。これによりNotebookの計算を
-高速に保ちながら、
-$g_{ij}=\partial_iX\mathbin{\cdot}\partial_jX$ から導かれるものと
-同じ計量を使えます。
+Egisonは埋め込みを微分して座標接ベクトルを求め、それらの内積として
+各成分 $g_{ij}=\partial_iX\mathbin{\cdot}\partial_jX$ を構成します。
+逆計量は、この誘導計量から計算します。
 
 <!-- cell: c1ba9dd2 -->
 ## レヴィ・チヴィタ接続

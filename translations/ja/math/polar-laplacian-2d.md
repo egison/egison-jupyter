@@ -1,6 +1,6 @@
 <!--
 notebook: polar-laplacian-2d
-source-markdown-sha256: bc106c96d5daf6d542d4b8889f8b1f0da282dae14a8d19ef21fd50b1d0e67be8
+source-markdown-sha256: 70d9e57a77318e57dbca00ebe95b1e7e6b2cd72eb875b3207429b0312fbd0b7c
 -->
 
 <!-- cell: eaaca8cc -->
@@ -17,7 +17,8 @@ source-markdown-sha256: bc106c96d5daf6d542d4b8889f8b1f0da282dae14a8d19ef21fd50b1
 
 $$ds^2=dr^2+r^2d\theta^2$$
 
-計量とその逆計量を添字付きテンソルとして表現します。
+座標写像を微分して接ベクトルを求め、それらの内積から計量を構成します。
+逆計量は、この誘導計量の行列から計算します。
 
 <!-- cell: be39a592 -->
 ## 共変微分による導出
