@@ -1,6 +1,6 @@
 <!--
 notebook: riemann-curvature-tensor-of-S2xS3
-source-markdown-sha256: c0dd2ed0cbe5dcf492056f5fee60f94b5e046184297dda6989a9f1ed8a2fd316
+source-markdown-sha256: 4ae81cf129d5a9d65bb57ab5a5e087c1826399fa230d9c1a3b84227bd7a840f7
 -->
 
 <!-- cell: 597d65fd -->
@@ -34,25 +34,26 @@ $$
 座標領域の制約（$p u v\ne0$）も明確になります。
 
 <!-- cell: 40c363a8 -->
-## 計量
+## 局所フレームと誘導計量
 
-ゼロでない成分は、それぞれの対称成分と合わせて次の通りです。
+$f=q/(6u)$とおきます。計量は、正規直交フレームを用いて次のように
+分解できます。
 
 $$
-\begin{aligned}
-g_{11}&=\frac{3p^2u\sin^2\theta+2vp\cos^2\theta+q^2\cos^2\theta}{18up},
-&g_{13}&=\frac{-2vp\cos\theta-q^2\cos\theta}{18up},\\
-g_{15}&=-\frac{q\cos\theta}{3p},
-&g_{22}&=\frac p6,\\
-g_{33}&=\frac{2vp+q^2}{18up},
-&g_{35}&=\frac q{3p},\\
-g_{44}&=\frac p{2v},
-&g_{55}&=\frac{2u}{p}.
-\end{aligned}
+\begin{split}
+ds^2={}&\frac p6(d\theta^2+\sin^2\theta\,d\phi^2)
+  +\frac{p}{2v}dy^2
+  +\frac{v}{9u}(d\psi-\cos\theta\,d\phi)^2\\
+  &+\frac{2u}{p}
+    \bigl(d\alpha+f(d\psi-\cos\theta\,d\phi)\bigr)^2.
+\end{split}
 $$
 
-$(1,3,5)$ ブロックは互いに結合しています。このため、逆計量全体の計算や
-曲率の展開は、丸い球面・超球面を扱うNotebookよりも大幅に重くなります。
+下の`e_i_j`の各行は、座標接ベクトル$e_i$をこの正規直交フレームで
+表したものです。丸い球面のNotebookと同じように、Egisonは接ベクトルの
+内積$g_{ij}=e_i\mathbin{\cdot}e_j$からすべての計量成分を構成します。
+$(1,3,5)$ブロックの結合は、$d\psi-\cos\theta\,d\phi$が2か所に現れる
+ことから生成されます。
 
 <!-- cell: 2a675a89 -->
 ## 接続と曲率の計算手順

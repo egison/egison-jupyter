@@ -591,44 +591,45 @@ def _s2xs3_cells() -> list[dict]:
         code("(p, u, v, q)"),
         markdown(
             r"""
-            ## Metric
+            ## Local frame and induced metric
 
-            The nonzero entries, together with their symmetric partners, are
+            Put $f=q/(6u)$.  The metric has the orthonormal-frame decomposition
 
             $$
-            \begin{aligned}
-            g_{11}&=\frac{3p^2u\sin^2\theta+2vp\cos^2\theta+q^2\cos^2\theta}{18up},
-            &g_{13}&=\frac{-2vp\cos\theta-q^2\cos\theta}{18up},\\
-            g_{15}&=-\frac{q\cos\theta}{3p},
-            &g_{22}&=\frac p6,\\
-            g_{33}&=\frac{2vp+q^2}{18up},
-            &g_{35}&=\frac q{3p},\\
-            g_{44}&=\frac p{2v},
-            &g_{55}&=\frac{2u}{p}.
-            \end{aligned}
+            \begin{split}
+            ds^2={}&\frac p6(d\theta^2+\sin^2\theta\,d\phi^2)
+              +\frac{p}{2v}dy^2
+              +\frac{v}{9u}(d\psi-\cos\theta\,d\phi)^2\\
+              &+\frac{2u}{p}
+                \bigl(d\alpha+f(d\psi-\cos\theta\,d\phi)\bigr)^2.
+            \end{split}
             $$
 
-            The $(1,3,5)$ block is coupled, which is why a full inverse and curvature
-            expansion are substantially heavier than in the round-sphere notebooks.
+            Each row of `e_i_j` below is the coordinate tangent vector $e_i$
+            expressed in this orthonormal frame.  As in the round-sphere notebooks,
+            Egison constructs every metric component from tangent-vector inner
+            products, $g_{ij}=e_i\mathbin{\cdot}e_j$.  The coupled $(1,3,5)$ block is
+            produced by the two appearances of $d\psi-\cos\theta\,d\phi$.
             """
         ),
         code(
             """
-            def g_i_j : Matrix MathValue :=
-              [| [| (3 * p^2 * (sin θ)^2 * u + 2 * v * p * (cos θ)^2 + q^2 * (cos θ)^2) / (18 * u * p)
+            def f : MathValue := q / (6 * u)
+
+            def e_i_j : Matrix MathValue :=
+              [| [| sqrt (p / 6) * sin θ
                    , 0
-                   , (-2 * v * p * cos θ - q^2 * cos θ) / (18 * u * p)
+                   , -(sqrt (v / u) / 3) * cos θ
                    , 0
-                   , (-q * cos θ) / (3 * p) |]
-               , [| 0, p / 6, 0, 0, 0 |]
-               , [| (-2 * v * p * cos θ - q^2 * cos θ) / (18 * u * p)
-                   , 0
-                   , (2 * v * p + q^2) / (18 * u * p)
-                   , 0
-                   , q / (3 * p) |]
-               , [| 0, 0, 0, p / (2 * v), 0 |]
-               , [| (-q * cos θ) / (3 * p), 0, q / (3 * p), 0, 2 * u / p |]
+                   , -sqrt (2 * u / p) * f * cos θ |]
+               , [| 0, sqrt (p / 6), 0, 0, 0 |]
+               , [| 0, 0, sqrt (v / u) / 3, 0, sqrt (2 * u / p) * f |]
+               , [| 0, 0, 0, sqrt (p / (2 * v)), 0 |]
+               , [| 0, 0, 0, 0, sqrt (2 * u / p) |]
                |]_i_j
+
+            def g_i_j : Matrix MathValue :=
+              generateTensor (\[i, j] -> V.* e_i_# e_j_#) [5, 5]
             """
         ),
         code("g_2_2"),
@@ -718,11 +719,23 @@ def _schwarzschild_cells() -> list[dict]:
         ),
         markdown(
             r"""
-            ## Metric and inverse
+            ## Local frame, metric, and inverse
 
             The chart covers $r>0$ away from $A=0$.  The surface
             $r=2GM/c^2$ is a coordinate horizon in this chart, whereas $r=0$ will be
-            detected by a curvature invariant.
+            detected by a curvature invariant.  In a local Lorentz frame with
+            $\eta=\operatorname{diag}(1,-1,-1,-1)$, the coordinate tangent vectors
+            have components
+
+            $$
+            e_t=(\sqrt A,0,0,0),\quad
+            e_r=(0,A^{-1/2},0,0),\quad
+            e_\theta=(0,0,r,0),\quad
+            e_\phi=(0,0,0,r\sin\theta).
+            $$
+
+            Egison obtains the metric as $g_{ij}=\eta(e_i,e_j)$ and computes its
+            inverse, instead of entering either matrix component by component.
             """
         ),
         code(
@@ -732,19 +745,20 @@ def _schwarzschild_cells() -> list[dict]:
             def x : Vector MathValue := [| t, r, θ, φ |]
             def A : MathValue := `(c^2 * r - 2 * G * M) / (c^2 * r)
 
-            def g_i_j : Matrix MathValue :=
-              [| [| A, 0, 0, 0 |]
-               , [| 0, -1 / A, 0, 0 |]
-               , [| 0, 0, -r^2, 0 |]
-               , [| 0, 0, 0, -r^2 * (sin θ)^2 |]
+            def e_i_j : Matrix MathValue :=
+              [| [| sqrt A, 0, 0, 0 |]
+               , [| 0, 1 / sqrt A, 0, 0 |]
+               , [| 0, 0, r, 0 |]
+               , [| 0, 0, 0, r * sin θ |]
                |]_i_j
 
-            def g~i~j : Matrix MathValue :=
-              [| [| 1 / A, 0, 0, 0 |]
-               , [| 0, -A, 0, 0 |]
-               , [| 0, 0, -r^(-2), 0 |]
-               , [| 0, 0, 0, -r^(-2) * (sin θ)^(-2) |]
-               |]~i~j
+            def minkowskiDot (u : Vector MathValue) (v : Vector MathValue) : MathValue :=
+              u_1 * v_1 - u_2 * v_2 - u_3 * v_3 - u_4 * v_4
+
+            def g_i_j : Matrix MathValue :=
+              generateTensor (\[i, j] -> minkowskiDot e_i_# e_j_#) [4, 4]
+
+            def g~i~j : Matrix MathValue := M.inverse g_#_#
             """
         ),
         code("A"),

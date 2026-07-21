@@ -1,6 +1,6 @@
 <!--
 notebook: riemann-curvature-tensor-of-Schwarzschild-metric
-source-markdown-sha256: ca6b6cffd81df31c03c804ae27421eac97812446d46ca5176595c708dbfbd66a
+source-markdown-sha256: 5428befa0df81070979a82782ee733dffbae419f017988e7a149b7e8f1471bb4
 -->
 
 <!-- cell: c20860aa -->
@@ -23,11 +23,23 @@ $$
 この違いを確認します。
 
 <!-- cell: 459657af -->
-## 計量と逆計量
+## 局所フレーム、計量、逆計量
 
 この座標表示は、$r>0$かつ$A=0$でない領域を覆います。曲面
 $r=2GM/c^2$はこの座標表示における座標地平面ですが、$r=0$の
 特異性は曲率不変量によって検出されます。
+$\eta=\operatorname{diag}(1,-1,-1,-1)$である局所Lorentzフレームでは、
+座標接ベクトルの成分は
+
+$$
+e_t=(\sqrt A,0,0,0),\quad
+e_r=(0,A^{-1/2},0,0),\quad
+e_\theta=(0,0,r,0),\quad
+e_\phi=(0,0,0,r\sin\theta).
+$$
+
+Egisonは計量や逆計量を成分ごとに入力するのではなく、
+$g_{ij}=\eta(e_i,e_j)$として計量を求め、その計量から逆計量を計算します。
 
 <!-- cell: 014e4807 -->
 ## レヴィ・チヴィタ接続
