@@ -1,6 +1,6 @@
 """Regenerate all route-mapped mathematics notebooks."""
 
-from . import algebra_number, analysis, forms_physics, riemann
+from . import algebra_number, analysis, emr, forms_physics, riemann
 from .catalog import EXPECTED_SLUGS
 from .common import NOTEBOOK_DIR
 
@@ -9,6 +9,7 @@ def main() -> None:
     algebra_number.main()
     analysis.build()
     riemann.build()
+    emr.build()
     forms_physics.main()
 
     actual = {path.stem for path in NOTEBOOK_DIR.glob("*.ipynb")}

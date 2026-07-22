@@ -7,14 +7,21 @@ from pexpect import replwrap, EOF
 from subprocess import check_output
 from builtins import str as text
 
+import json
+import os
 import re
 import signal
+import tempfile
 import uuid
 
 __version__ = '0.1.0'
 
 version_pat = re.compile(r'(\d+(\.\d+)+)')
 crlf_pat = re.compile(r'[\r\n]+')
+
+# macOS terminals have a relatively small canonical input buffer.  Keep enough
+# headroom for multibyte input and the REPL's own processing.
+MAX_INLINE_REPL_BYTES = 768
 
 
 class EgisonKernel(Kernel):
@@ -91,6 +98,38 @@ class EgisonKernel(Kernel):
 
         return expressions
 
+    def _run_expression(self, expr):
+        """Run one top-level expression without overflowing the REPL's PTY.
+
+        Egison's ``#newline`` escape lets the kernel submit a multiline
+        expression as one REPL line.  A sufficiently large expression exceeds
+        the terminal's canonical line limit, however, and the PTY responds with
+        BEL characters instead of delivering it to Egison.  Loading a temporary
+        source file avoids that limit while evaluating in the same REPL
+        environment and preserving normal output.
+        """
+        repl_code = crlf_pat.sub('#newline', expr)
+        if len(repl_code.encode('utf-8')) <= MAX_INLINE_REPL_BYTES:
+            return self.egisonwrapper.run_command(repl_code, timeout=None)
+
+        temp_path = None
+        try:
+            with tempfile.NamedTemporaryFile(
+                    mode='w', suffix='.egi', encoding='utf-8',
+                    newline='\n', delete=False) as source_file:
+                temp_path = source_file.name
+                source_file.write(expr)
+                source_file.write('\n')
+
+            command = 'loadFile ' + json.dumps(temp_path, ensure_ascii=False)
+            return self.egisonwrapper.run_command(command, timeout=None)
+        finally:
+            if temp_path is not None:
+                try:
+                    os.unlink(temp_path)
+                except FileNotFoundError:
+                    pass
+
     def do_execute(self, code, silent, store_history=True,
                    user_expressions=None, allow_stdin=False):
         code = code.strip()
@@ -102,11 +141,8 @@ class EgisonKernel(Kernel):
         interrupted = False
 
         for expr in expressions:
-            # Replace newlines within a single expression for the REPL
-            repl_code = crlf_pat.sub('#newline', expr)
-
             try:
-                output = self.egisonwrapper.run_command(repl_code, timeout=None)
+                output = self._run_expression(expr)
             except KeyboardInterrupt:
                 self.egisonwrapper.child.sendintr()
                 interrupted = True

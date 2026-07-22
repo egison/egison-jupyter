@@ -42,6 +42,8 @@ CATALOG = [
     ("Geometry", "euler-form-of-S2", "Euler Form of S²"),
     ("Geometry", "euler-form-of-T2", "Euler Form of T²"),
     ("Geometry", "chern-form-of-CP1", "Chern Form of a Complex Line Bundle over CP¹"),
+    ("Geometry", "emr-highest-power-coefficient", "Highest-Power Coefficient in the EMR Curvature Formula"),
+    ("Geometry", "emr-thurston-wcs-invariant", "Wodzicki–Chern–Simons Invariant on the Thurston Example"),
 ]
 
 EXPECTED_SLUGS = {slug for _, slug, _ in CATALOG}

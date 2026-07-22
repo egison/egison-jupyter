@@ -1,6 +1,6 @@
 # Egison Mathematics Notebooks
 
-These 41 self-contained notebooks correspond one-to-one with the routable demo
+These 43 self-contained notebooks correspond one-to-one with the routable demo
 pages under `www.egison.org/math`.  Each notebook uses the page basename as its
 slug, so `www.egison.org/math/<slug>.html` maps directly to `<slug>.ipynb`.
 
@@ -60,6 +60,8 @@ notebook from a fresh kernel, from top to bottom.
 - [Euler Form of S²](euler-form-of-S2.ipynb)
 - [Euler Form of T²](euler-form-of-T2.ipynb)
 - [First Chern Form on CP¹](chern-form-of-CP1.ipynb)
+- [Highest-Power Coefficient in the EMR Curvature Formula](emr-highest-power-coefficient.ipynb)
+- [Wodzicki–Chern–Simons Invariant on the Thurston Example](emr-thurston-wcs-invariant.ipynb)
 
 ## Maintenance
 

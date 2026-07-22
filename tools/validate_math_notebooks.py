@@ -93,7 +93,7 @@ def main() -> int:
         "--notebook-dir",
         type=Path,
         default=NOTEBOOK_DIR,
-        help="directory containing the 41 mathematics notebooks",
+        help="directory containing the mathematics notebooks",
     )
     args = parser.parse_args()
 
